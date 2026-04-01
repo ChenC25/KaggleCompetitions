@@ -1,51 +1,87 @@
 # Learning Agency Lab – Automated Essay Scoring 2.0 (Kaggle)
 
-This repository contains my solution to the **Learning Agency Lab – Automated Essay Scoring 2.0** Kaggle competition. The goal is to automatically score student-written essays, helping reduce grading time while enabling more timely, consistent feedback.
+This repository contains my solution to the **Learning Agency Lab – Automated Essay Scoring 2.0** Kaggle competition. The task is to automatically predict holistic essay scores from raw student-written text, helping reduce grading effort while enabling faster feedback for students.
 
 🏅 **Result: Silver Medal (112 / 2706 teams)**  
-📜 Certificate: https://www.kaggle.com/certification/competitions/chenc25/learning-agency-lab-automated-essay-scoring-2
+📜 Competition Certificate: https://www.kaggle.com/certification/competitions/chenc25/learning-agency-lab-automated-essay-scoring-2
 
 ---
 
-## 🧠 Problem Overview
+## 🧠 Problem Description
 
-Essay writing is a strong indicator of student learning, but grading essays is time-consuming and expensive for educators. This competition focuses on building an **automated essay scoring (AES)** model that predicts a score on a **1–6 ordinal scale**, evaluated using **Quadratic Weighted Kappa (QWK)**.
+Essay writing is a key indicator of student learning, but evaluating essays is time‑consuming and costly for educators. This competition focuses on **automated essay scoring (AES)**, where models must predict human-assigned scores based solely on essay text.
 
-The dataset includes realistic classroom writing samples across diverse student populations.
+Each essay is scored using a **holistic rubric** on a **1–6 ordinal scale**, and performance is evaluated using **Quadratic Weighted Kappa (QWK)**.
 
 ---
 
-## ⚙️ Solution Summary
+## 📊 Dataset Description
 
-This solution follows an end-to-end ML workflow:
+The competition dataset consists of approximately **24,000 student-written argumentative essays**, collected from realistic classroom settings and scored by human raters.
 
-### 1) Feature Engineering
-- Text preprocessing + feature caching
-- TF-IDF / count-based features
-- Additional engineered linguistic/statistical features
+### Files
 
-### 2) Modeling
-A hybrid ensemble of:
-- **LightGBM Regressor** with a custom QWK-optimized objective
-- **XGBoost Regressor** with a custom QWK-optimized objective
-- Weighted averaging ensemble for improved generalization
+#### `train.csv`
+Contains essays and their corresponding scores, used for model training and validation.
 
-### 3) Training Strategy
-- **15-fold Stratified Cross-Validation**
+**Fields:**
+- `essay_id` — Unique identifier for each essay  
+- `full_text` — Full essay response text  
+- `score` — Holistic essay score on a **1–6** scale  
+
+---
+
+#### `test.csv`
+Contains essays used for inference and submission generation.
+
+**Fields:**
+- `essay_id` — Unique identifier for each essay  
+- `full_text` — Full essay response text  
+
+> Note: The rerun test set contains approximately **8,000 essays**.
+
+---
+
+#### `sample_submission.csv`
+Template file demonstrating the required submission format.
+
+**Fields:**
+- `essay_id` — Unique identifier for each essay  
+- `score` — Predicted holistic score (1–6)
+
+---
+
+## ⚙️ Solution Overview
+
+This solution uses a feature‑based regression approach with model ensembling:
+
+### Feature Engineering
+- Text preprocessing and normalization
+- TF‑IDF and count‑based features
+- Additional engineered linguistic and statistical features
+- Feature caching for fast experimentation
+
+### Modeling
+- **LightGBM Regressor** with a custom QWK‑optimized objective
+- **XGBoost Regressor** with a custom QWK‑optimized objective
+- Weighted ensemble of both models
+
+### Training Strategy
+- **15‑fold stratified cross‑validation**
 - Early stopping
-- GPU acceleration (when available)
+- GPU acceleration when available
 
-### 4) Post-processing
-- Continuous regression outputs are converted into discrete labels (1–6)
-- Thresholds are tuned to maximize QWK on OOF predictions
+### Post‑processing
+- Continuous regression outputs mapped to discrete scores (1–6)
+- Optimized thresholds learned from OOF predictions to maximize QWK
 
 ---
 
-## 📊 Results
+## 📈 Results
 
 - **Mean CV QWK:** ~0.847  
 - **Mean CV F1 (weighted):** ~0.690  
-- **Final Rank:** **112 / 2706** (🥈 Silver Medal)
+- **Final Rank:** 112 / 2706 (🥈 Silver Medal)
 
 ---
 
@@ -53,8 +89,9 @@ A hybrid ensemble of:
 
 ```text
 ├── notebooks/              # EDA and experiments
-├── src/                    # Feature engineering + training/inference scripts
-├── models/                 # Saved models (optional)
-├── submissions/            # Submission files
+├── src/                    # Feature engineering, training, inference
+├── models/                 # Saved model artifacts (optional)
+├── submissions/            # Kaggle submission files
 ├── requirements.txt        # Python dependencies
 └── README.md
+``
